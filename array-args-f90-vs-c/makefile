@@ -1,8 +1,19 @@
-CC = icc
-FC = ifort
+compiler ?= GNU
 
-CFLAGS = -O2 -xHost -Wall -restrict
-FFLAGS = -O2 -xHost -warn all
+ifeq ($(compiler), GNU)
+  CC = gcc
+  FC = gfortran
+  CFLAGS = -O2 -march=native -Wall -std=c99
+  FFLAGS = -O2 -march=native -Wall
+endif
+
+ifeq ($(compiler), INTEL)
+  CC = icc
+  FC = ifort
+  CFLAGS = -O2 -xHost -Wall -restrict
+  FFLAGS = -O2 -xHost -warn all
+endif
+
 
 OBJ = driver.o cfunc.o ffunc.o
 
