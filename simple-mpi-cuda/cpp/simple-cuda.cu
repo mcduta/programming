@@ -63,7 +63,7 @@ void mpi_data_process (const int mpi_rank, const int block_size, const int grid_
   // data size is so that data maps nicely onto the CUDA "grid of blocks" SIMD model
   int data_size = block_size * grid_size;
 
-
+  // device numbers
   int dev_id;
   cudaDeviceProp dev_prop;
   CUDA_SAFE_CALL ( cudaGetDevice ( &dev_id ) );
