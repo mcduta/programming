@@ -44,9 +44,12 @@ mpirun -np 8 python simple-mpi4py-cupy.py -g -s
 ## References
 <a id="1">[1]</a>
 https://en.wikipedia.org/wiki/Message_Passing_Interface
+
 <a id="2">[2]</a>
 https://developer.nvidia.com/cuda-zone
+
 <a id="3">[3]</a>
 https://mpi4py.readthedocs.io/en/stable/
+
 <a id="4">[4]</a>
 https://docs.cupy.dev/en/stable/index.html
