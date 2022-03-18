@@ -38,7 +38,7 @@
 
 
 # ifndef REAL
-  # define REAL double
+  # define REAL float
 # endif
 
 

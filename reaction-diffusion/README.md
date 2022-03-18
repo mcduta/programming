@@ -46,7 +46,7 @@ Run the executable ``rd`` in a directoruy in which it picks up the default confi
   * ``0.25`` -- value of spot initialisation for second chemical species;
   * ``7`` -- number or random spots to initialise.
 
-The solution is zero in both species initially, with the exception of a number of spots (random position and size), where both species are initialised to the respective values specified in the config file. Note: a ``json`` configuration file would be a friendlier option but that would bring library dependencies that would break the simplicity of this code.
+The solution is random in both species initially, with the exception of a number of spots (random position and size), where both species are initialised to the respective values specified in the config file. Note: a ``json`` configuration file would be a friendlier option but that would bring library dependencies that would break the simplicity of this code.
 
 An alternative configuratrion file can be passed on to the executable as an argument. A minimal run sequence is
 ```
@@ -54,15 +54,15 @@ An alternative configuratrion file can be passed on to the executable as an argu
 python ./python/rdPlot.py
 ```
 
+New configuration files can be added using model paramaters found in similar demonstrators: [[2](#2), [[3](#3), [[4](#4).
+
 Another executable built is ``rdGL``, which renders the first species solution (while it is being computed) using OpenGL. The configuration setup and the solution solver is shared with ``rd``. Users can interact with the rendering window via the following keys:
   * ``h`` -- print help;
   * ``k`` -- recalibrate colours;
   * ``s`` -- save current solution to file (to visualise using the Python tool);
   * ``q`` -- terminate and quit.
 
-``rdGL`` limitations:
-  * rendering works only if the number of finited difference points in x and y are the same (this is a bug!);
-  * the rendering "idle" function keeps iterating and rendering ad infinitum, which means the number of iterations in the config file is the number after which OpenGL renders rather than the total number of iterations.
+One ``rdGL`` caveat is the rendering "idle" function keeps iterating and rendering ad infinitum, which means the number of iterations in the config file is the number after which OpenGL renders rather than the total number of iterations.
 
 
 
@@ -75,3 +75,6 @@ https://mrob.com/pub/comp/xmorphia/
 
 <a id="3">[3]</a>
 https://itp.uni-frankfurt.de/~gros/StudentProjects/Projects_2020/projekt_schulz_kaefer/
+
+<a id="4">[4]</a>
+http://pmneila.github.io/jsexp/grayscott/

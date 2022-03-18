@@ -15,10 +15,14 @@
 
 // ----- class
 class renderer {
-  unsigned char *data;          // data in RGB format
-  REAL dataMin;                 // minimum solution value
-  REAL dataMax;                 // maximum solution value
-  GLuint texture;               // GL texture
+  public:
+    unsigned char *data;   // data in RGB format
+    GLuint texture;        // GL texture
+  private:
+    REAL dataMin;          // minimum solution value
+    REAL dataMax;          // maximum solution value
+    GLfloat maxh=1.0,      // maximum and minumum
+            maxw=1.0;      // texture horz and vert span
 
 public:
   /* contructor */
@@ -30,7 +34,7 @@ public:
   /* methods */
   void solutionExtrema (class solution *sol);
   void solutionToImage (class solution *sol);
-  void initImage (class solution *sol);
+  void initImage       (class solution *sol);
   void renderImage ();
 };
 

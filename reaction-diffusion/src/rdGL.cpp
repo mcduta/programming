@@ -145,7 +145,7 @@ void GLinitImage (int narg, char **varg) {
 //
 
 void GLdisplayImage (void) {
-  img -> renderImage ();
+  img -> renderImage ( );
 }
 
 
@@ -208,7 +208,7 @@ void GLrenderImage ( ) {
   // NB: this is called by the GL idle function, so repeated ad infinitum!
   sol -> iterate (sol->niter);
   img -> solutionToImage (sol);
-  img -> renderImage ();
+  img -> renderImage ( );
 
   wtime = omp_get_wtime () - wtime;
   std::cout << " *** finished " << sol->niter << " iterations in " << wtime << std::endl;

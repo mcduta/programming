@@ -74,6 +74,12 @@ void solution :: init (const std::string configFileName) {
     throw " *** error: file " + configFileName + " cannot be opened";
   }
 
+  // random number generation
+  std::random_device rand_dev;
+  std::mt19937 rand_gen (rand_dev());
+  std::normal_distribution <REAL> rand_distr_sol (0, 1);   // normal distribution, mean=0, sigma=1
+  std::uniform_real_distribution <REAL> rand_distr_init (0, 1); // unifirm distribution between 0 and 1
+
   // common indices
   std::size_t m,n,k;
 
@@ -81,13 +87,13 @@ void solution :: init (const std::string configFileName) {
   u = new REAL[M*N];
   v = new REAL[M*N];
 
-  // step 1: zero solution everywhere
+  // step 1: random solution everywhere
   # pragma omp parallel shared(u,v,M,N) private(m,n,k)
   for (n=0; n<N; n++) {
       for (m=0; m<M; m++) {
         k  = COL_MAJOR_INDEX_2D(M,N,m,n);
-        u[k] = 0.0;
-        v[k] = 0.0;
+        u[k] = 1.0 + 0.02 * rand_distr_sol (rand_gen);
+        v[k] = 0.0 + 0.02 * rand_distr_sol (rand_gen);
       }
   }
 
@@ -97,18 +103,12 @@ void solution :: init (const std::string configFileName) {
               ss;     // spot size
 
   // step 2: go over all spots and initialise
-  std::random_device rand_dev;
-  std::default_random_engine rand_eng(rand_dev());
-  std::uniform_int_distribution<int> rand_distr_M (1, M-2);
-  std::uniform_int_distribution<int> rand_distr_N (1, N-2);
-  std::uniform_int_distribution<int> rand_distr_s (1, MIN(M,N)/20);
-
   for (is=0; is<ns; is++) {
     // spot centre
-    mc = rand_distr_M (rand_eng);
-    nc = rand_distr_N (rand_eng);
+    mc = 1 + std::round ( (M-2)*rand_distr_init (rand_gen) ); mc = MIN (M-2, mc);
+    nc = 1 + std::round ( (N-2)*rand_distr_init (rand_gen) ); nc = MIN (N-2, nc);
     // spot size
-    ss = rand_distr_s (rand_eng);
+    ss = 1 + std::round ( (MIN(M,N)/20-1)*rand_distr_init (rand_gen) );
     // initialise spot
     for (n=MAX(0, nc-ss); n<MIN(N-1,nc+ss); n++) {
       for (m=MAX(0, mc-ss); m<MIN(M-1,mc+ss); m++) {

@@ -10,5 +10,12 @@ v = data[nx*ny:].reshape(ny,nx).T
 
 from matplotlib import pyplot
 
-pyplot.figure(1); pyplot.imshow (u);
-pyplot.figure(2); pyplot.imshow (v); pyplot.show ();
+pyplot.figure(1);
+pyplot.imshow (u, interpolation="bilinear", cmap="hot");
+pyplot.axis("off")
+
+pyplot.figure(2);
+pyplot.imshow (v, interpolation="bilinear", cmap="hot");
+pyplot.axis("off")
+
+pyplot.show ();

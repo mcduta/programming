@@ -35,6 +35,8 @@ void renderer :: initRenderer (class solution *sol) {
   data    = new unsigned char [(sol->M) * (sol->N) * 4];
   dataMin = RENDERER_DATA_MIN_INIT;
   dataMax = RENDERER_DATA_MAX_INIT;
+  maxw    = sol->N / ( (float) MAX(sol->M, sol->N) );
+  maxh    = sol->M / ( (float) MAX(sol->M, sol->N) );
 }
 
 // ----- get data limits
@@ -63,6 +65,7 @@ void renderer :: solutionExtrema (class solution *sol) {
 
   dataMin = smin;
   dataMax = smax;
+
 }
 
 
@@ -98,7 +101,8 @@ void renderer :: solutionToImage (class solution *sol) {
         i = (int) ceil((sk - dataMin)/(dataMax - dataMin) * MAP_RGB_SIZE);
         i = MIN ( MAP_RGB_SIZE - 1, MAX ( 0, i ) );
 
-        j = ROW_MAJOR_INDEX_3D(M,N,4, m,n,0);
+        // NB: (M,N) -> (N,M) !!!
+        j = ROW_MAJOR_INDEX_3D(N,M,4, n,m,0);
 
         data[j+0] = mapRGB[i][0];
         data[j+1] = mapRGB[i][1];
@@ -142,15 +146,15 @@ void renderer :: renderImage () {
 
   /*
     QUAD vertex are:
-       (0,1) (1,1)
-       (0,0) (1,0)
+       (0,1) (1,1)       (0,maxh) (maxw,maxh)
+       (0,0) (1,0)       (0,   0) (maxw,   0)
    */
 
   glBegin(GL_QUADS);
-  glTexCoord2f(0.0, 0.0); glVertex2f(-1.0, -1.0);
-  glTexCoord2f(0.0, 1.0); glVertex2f(-1.0,  1.0);
-  glTexCoord2f(1.0, 1.0); glVertex2f( 1.0,  1.0);
-  glTexCoord2f(1.0, 0.0); glVertex2f( 1.0, -1.0);
+  glTexCoord2f( 0.0,  0.0); glVertex2f(-maxw, -maxh);
+  glTexCoord2f( 0.0, maxh); glVertex2f(-maxw,  maxh);
+  glTexCoord2f(maxw, maxh); glVertex2f( maxw,  maxh);
+  glTexCoord2f(maxw,  0.0); glVertex2f( maxw, -maxh);
   glEnd();
   glFlush();
   glutSwapBuffers();
