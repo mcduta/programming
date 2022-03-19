@@ -1,6 +1,6 @@
 # C memory allocation wrappers for multi-dimensional arrays
 
-## Backgroud
+## Background
 Using heap allocatable multi-dimensional arrays in C presents the programmer with a challenge when using corresponding multi-dimensional indexing. This easily works with multi-dimensional arrays of fixed dimensions at compile time using the familiar indexing (_e.g._ ``[i][j]``) but not with allocatable arrays.
 
 One solution is to allocate a linear memory space of appropriate dimension and use a map of multi-dimensional indexing to a 1D linear indexing. This has the advantage that row- and column-major ordering are easily dealt with [[1]](#1). For example
