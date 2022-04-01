@@ -137,8 +137,10 @@ void solution :: init (const std::string configFileName) {
 
 void solution :: dump (std::string filename) {
 
+  auto s = sizeof (REAL);
   std::ofstream file;
   file.open  (filename, std::ios::binary | std::ios::out);
+  file.write ((char *) &s, sizeof s);
   file.write ((char *) &M, sizeof M);
   file.write ((char *) &N, sizeof N);
   file.write ((char *)  u, sizeof (REAL) * M * N);
@@ -181,15 +183,30 @@ void solution :: dump (std::string filename) {
 void solution :: iterate (std::size_t titer) {
 
   // indices
-  std::size_t m,n,k,i;
+  std::size_t m,n,k,kx,i;
 
   // temp vars
   REAL uvv, Lu,Lv;
 
+  // allocate extra memory
+  REAL *ux = new REAL[N*M];
+  REAL *vx = new REAL[N*M];
+
+  // extra pointers
+  REAL *u1, *v1, *u2, *v2;
+
+
+  // initially...
+  //    (u1,v1) point to (u,v)
+  //    (u2,v2) point to (ux,vx)
+  u1 = u;  v1 = v;
+  u2 = ux; v2 = vx;
+
+
   // omp parallel region
   # pragma omp parallel default(none) \
-                        shared(M,N,u,v,titer) \
-                        private(i,m,n,k,Lu,Lv,uvv)
+    shared(M,N,u1,v1,u2,v2,titer)     \
+    private(i,m,n,k,kx,Lu,Lv,uvv)
   {
 
     // time iterations
@@ -203,46 +220,65 @@ void solution :: iterate (std::size_t titer) {
           k  = COL_MAJOR_INDEX_2D(M,N,m,n);
 
           // Laplacian values
-          Lu = u[k+1] + u[k-1] + u[k+M] + u[k-M] - 4.0*u[k];
-          Lv = v[k+1] + v[k-1] + v[k+M] + v[k-M] - 4.0*v[k];
+          Lu = u1[k+1] + u1[k-1] + u1[k+M] + u1[k-M] - 4.0*u1[k];
+          Lv = v1[k+1] + v1[k-1] + v1[k+M] + v1[k-M] - 4.0*v1[k];
 
           // u*v*v nonlinear term
-          uvv = u[k]*v[k]*v[k];
+          uvv = u1[k]*v1[k]*v1[k];
 
-          // update
-          u[k] += Du*Lu - uvv + alpha * (1.0 - u [k]);
-          v[k] += Dv*Lv + uvv - (alpha + beta) * v[k] ;
+          // update (u2,v2) from (u1,v1)
+          u2[k] = u1[k] + Du*Lu - uvv + alpha * (1.0 - u1[k]);
+          v2[k] = v1[k] + Dv*Lv + uvv - (alpha + beta) * v1[k] ;
 
         }
       } // step 1
 
       // step 2: solution boundary conditions
-      # pragma omp for
+      # pragma omp for nowait
       for (m=0; m<M; m++) {
         // u[0, :] = u[-2, :]
-        k = COL_MAJOR_INDEX_2D(M,N,m,0);
-        u[k] = u[k+M*(N-2)];
-        v[k] = v[k+M*(N-2)];
+        k  = COL_MAJOR_INDEX_2D(M,N,m,0);
+        kx = k+M*(N-2);
+        u2[k] = u2[kx];
+        v2[k] = v2[kx];
         // u[-1, :] = u[1, :]
-        k = COL_MAJOR_INDEX_2D(M,N,m,1);
-        u[k+M*(N-2)] = u[k];
-        v[k+M*(N-2)] = v[k];
+        k  = COL_MAJOR_INDEX_2D(M,N,m,1);
+        kx = k+M*(N-2);
+        u2[kx] = u2[k];
+        v2[kx] = v2[k];
       }
       # pragma omp for
       for (n=0; n<N; n++) {
         // u[:, 0] = u[:, -2]
-        k = COL_MAJOR_INDEX_2D(M,N,0,n);
-        u[k] = u[k+M-2];
-        v[k] = v[k+M-2];
+        k  = COL_MAJOR_INDEX_2D(M,N,0,n);
+        kx = k+M-2;
+        u2[k] = u2[kx];
+        v2[k] = v2[kx];
         // u[:, -1] = u[:, 1]
-        k = COL_MAJOR_INDEX_2D(M,N,1,n);
-        u[k+M-2] = u[k];
-        v[k+M-2] = v[k];
+        k  = COL_MAJOR_INDEX_2D(M,N,1,n);
+        kx = k+M-2;
+        u2[kx] = u2[k];
+        v2[kx] = v2[k];
       } // step 2
+
+      // swap (u1,v1) and (u2,v2)
+      # pragma omp single
+      {
+        REAL *uswp = u2;
+        REAL *vswp = v2;
+        u2 = u1;
+        v2 = v1;
+        u1 = uswp;
+        v1 = vswp;
+      }
 
     } // time iterations
 
   } // omp parallel region
+
+  // free extra memory
+  if (ux) delete [] ux;
+  if (vx) delete [] vx;
 
 }
 

@@ -9,14 +9,18 @@ project (ReactionDiffusion)
 #
 # --- C++ support (with AVX)
 enable_language (CXX)
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 17)
 
 if (NOT CMAKE_BUILD_TYPE)
     set (CMAKE_BUILD_TYPE "Release")
 endif ()
 
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+    if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2")
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -xCORE-AVX2")
+    endif ()
 endif ()
 
 
