@@ -16,11 +16,7 @@
 # include "rd.hpp"
 # include "solution.hpp"
 # include "renderer.hpp"
-
-
-// glut
-# include <GL/gl.h>
-# include <GL/glut.h>
+# include "timer.hpp"
 
 
 //====================================================================//
@@ -202,7 +198,7 @@ void GLkeyboardImage (unsigned char key, int x, int y) {
 
 void GLrenderImage ( ) {
 
-  double wtime = omp_get_wtime ();
+  auto timer = get_time_start ();
 
   // go through all iterations at once
   // NB: this is called by the GL idle function, so repeated ad infinitum!
@@ -210,7 +206,7 @@ void GLrenderImage ( ) {
   img -> solutionToImage (sol);
   img -> renderImage ( );
 
-  wtime = omp_get_wtime () - wtime;
+  auto wtime = get_time_elapsed (timer);
   std::cout << " *** finished " << sol->niter << " iterations in " << wtime << std::endl;
 
 }

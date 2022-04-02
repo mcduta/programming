@@ -41,15 +41,15 @@ if (OPENMP_FOUND)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 else (OPENMP_FOUND)
-    message("WARNING: no OpenMP support.")
+    message ("WARNING: no OpenMP support.")
 endif ()
 
 
 #
 # --- "make"
-add_executable (rd rd.cpp solution.cpp)
+add_executable (rd rd.cpp solution.cpp timer.cpp)
 if (OPENGL_FOUND AND GLUT_FOUND)
-    add_executable (rdGL rdGL.cpp solution.cpp renderer.cpp)
+    add_executable (rdGL rdGL.cpp solution.cpp renderer.cpp timer.cpp)
     target_link_libraries (rdGL ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 endif ()
 

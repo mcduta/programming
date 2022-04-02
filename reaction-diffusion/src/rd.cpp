@@ -15,6 +15,7 @@
 // general
 # include "rd.hpp"
 # include "solution.hpp"
+# include "timer.hpp"
 
 
 
@@ -44,9 +45,9 @@ int main (int narg, char **varg) {
 
   // time iterate solution
   std::cout << " *** starting " << sol->niter << " iterations" << std::endl;
-  double wtime = omp_get_wtime ();
+  auto timer = get_time_start ();
   sol -> iterate (sol->niter);
-  wtime = omp_get_wtime () - wtime;
+  auto wtime = get_time_elapsed (timer);
   std::cout << " *** finished " << sol->niter << " iterations in " << wtime << std::endl;
 
   // write solution to file

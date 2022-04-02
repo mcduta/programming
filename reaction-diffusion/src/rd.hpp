@@ -11,8 +11,9 @@
 # include <fstream>
 # include <cstdlib>
 # include <random>
+# ifdef _OPENMP
 # include <omp.h>
-
+# endif
 
 // ----- definitions
 # ifndef MAX
