@@ -1,0 +1,180 @@
+\documentclass[12pt]{article}
+\usepackage{amstext}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[dvips]{epsfig}
+
+\def \fr {\frac}
+\def \pd {\partial}
+
+
+\title{The 2D Heat Equation}
+
+\begin{document}
+
+\section{Parallel computing}
+
+Parallel computing is the wave of the future, and always will be
+
+
+\section{Introduction}
+%        ============
+
+3D heat (diffusion) equation in its simplest form is the IVBP defined by the PDE
+%
+\[
+  \fr{\pd u}{\pd t} \ =\ \fr{\pd^2 u}{\pd x^2} \ +\ \fr{\pd^2 u}{\pd y^2} \ +\ \fr{\pd^2 u}{\pd z^2}
+\]
+%
+defined in the unit cube $0\ \leq\ x,~y,~z\ \leq\ 1$.  Boundary and initial conditions are
+%
+\begin{eqnarray*}
+  u(0,y,z,~t) &=& u(1,y,z,~t) = 0 \\
+  u(x,0,z,~t) &=& u(x,1,z,~t) = 0 \\
+  u(x,y,0,~t) &=& u(x,y,1,~t) = 0 \\
+  u(x,y,0) &=& sin(\pi l x)\ \sin(\pi m y)\ \sin(\pi n z)
+\end{eqnarray*}
+
+The analytic solution is
+\[
+  u(x,y,z,~t) \ =\ sin(\pi l x)\ \sin(\pi m y)\ \sin(\pi n z)\ \exp \left(-(l^2+m^2+n^2)\pi^2t \right)
+\]
+
+
+\section{Discretisation}
+%        ==============
+
+Using an equally spaced cartesian grid, with $I\!=\!J\!=\!K$ points in
+the $x$, $y$ and $z$ dimensions:
+%
+\[
+  \Delta x \!=\! \Delta y \!=\! \Delta z = \frac{1}{I-1}
+\]
+
+Using a time-explicit finite difference scheme -- FTCS (forward in
+time, centered in space) -- leads to the discretisation:
+%
+\[
+  u^{n+1}_{i,j,k} = u^n_{i,j,k} + \Delta t \begin{array}[t]{cc}
+                                          & \left( \frac{u^n_{i+1,j,k}-2u^n_{i,j,k}+u^n_{i-1,j,k}}{\Delta x^2} \right. \\
+                                        + & \frac{u^n_{i,j+1,k}-2u^n_{i,j,k}+u^n_{i,j-1,k}}{\Delta y^2} \\
+                                        + & \left. \frac{u^n_{i,j,k+1}-2u^n_{i,j,k}+u^n_{i,j,k-1}}{\Delta z^2} \right)
+                                      \end{array}
+\]
+%
+where $u^n_{ijk}$ is the numerical solution at $x_i\!=\!i\Delta x$,
+$y_j\!=\!j\Delta y$, $z_k\!=\!k\Delta z$ and at time $t_n\!=\!n\Delta
+t$.
+
+The stability condition for the FTCS scheme above is
+\[
+  \nu \ =\ \fr{\Delta t}{\Delta x^2} \ \leq\ \fr{1}{2*\text{\# dims}}\ =\ \fr{1}{6}
+\]
+
+Note: for 2D, the stability condition becomes
+\[
+  \nu \ =\ \fr{\Delta t}{\Delta x^2} \ \leq\ \fr{1}{4}
+\]
+
+\section{Implementation}
+%        ==============
+
+Several files available: Matlab, C, C and MPI.  (Fortran solution may be necessary.)
+
+\subsection{Program}
+%           -------
+Several observations concerning the coding of the explicit scheme above:
+%
+\begin{itemize}
+  \item 3D arrays in C allocated as contiguous linear memory space.
+    In accessing entries of the arrays there is a translation from the
+    3D indices {\tt i}, {\tt j}, {\tt k} to a linear memory index {\tt
+      s}, calculated such that storage is always column major.
+  \item Due to the explicit nature of the scheme, the ``new'' solution
+    is updated from the ``old'' at each time step.  This means working
+    with tho arrays of identical size.  Swapping pointers to two fixed
+    memory allocation is preferable to copying values.
+\end{itemize}
+
+\subsection{Validation}
+%           ----------
+Several validation tools:
+%
+\begin{itemize}
+  \item Validate the output of the codes against a baseline Matlab
+    implementation.  The output from the codes is a simple ASCII file.
+    The MPI code outputs one file per process, which are later merged
+    with the command {\tt make merge}.
+  \item Validate the scheme implementation with a simple convergence
+    test.  The figure below shows the variation of the RMS error
+    (continuous line) and the absolute solution error at one fixed
+    point in the domain with the number of discretisation points in
+    one dimension.  Errors are measured against the analytic solution.
+    %
+    \begin{figure}
+      \centering
+      \epsfig{figure = 3D-heat_-_solution-convergence.eps, width  = 0.4\textwidth}
+    \end{figure}
+
+\end{itemize}
+
+
+\subsection{Performance}
+%           -----------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Numerical Solution}
+%        ==================
+
+Define the discretisation matrix $A$
+
+\[
+  A \ =\
+    \left(
+      \begin{array}{ccccccccc}
+        -4 &  1 &        &        & 1 &   &        &        &    \\
+         1 & -4 &    1   &        &   & 1 &        &        &    \\
+           &  1 &   -4   & \ddots &   &   & \ddots &        &    \\
+           &    & \ddots & \ddots &   &   &        &    1   &    \\
+         1 &    &        &        &   &   &        &        &  1 \\
+           &  1 &        &        &   &   &        &        &    \\
+           &    & \ddots &        &   &   & \ddots & \ddots &    \\
+           &    &        &   1    &   &   & \ddots &   -4   &  1 \\
+           &    &        &        & 1 &   &        &    1   & -4
+      \end{array}
+    \right)
+\]
+
+Explicit methods:
+\[
+  \mathbf{u}^{n+1} \ =\ \left( I + \nu A \right)\ \mathbf{u}^n
+\]
+
+Implicit methods:
+\[
+  \left( I - \nu A \right)\ \mathbf{u}^{n+1} \ =\ \mathbf{u}^n
+\]
+
+Crank--Nicolson:
+\[
+  \left( I - \fr{1}{2}\nu A \right)\ \mathbf{u}^{n+1} \ =\
+  \left( I + \fr{1}{2}\nu A \right)\ \mathbf{u}^n
+\]
+
+
+
+\end{document}

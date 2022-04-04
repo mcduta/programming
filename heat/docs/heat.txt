@@ -1,0 +1,52 @@
+
+2D HEAT EQUATION -- NUMERICAL SOLUTION
+--------------------------------------
+
+The PDE is
+
+           2      2
+     du   d u    d u
+     -- = ---2 + ---2
+     dt   d x    d x
+
+defined on the unit square [0, 1] X [0, 1]
+and with the boundary conditions
+
+     u(0,y,t) = u(1,y,t) = 0
+     u(x,0,t) = u(x,1,t) = 0
+     u(x,y,0) = sin(wnx*pi*x)*sin(wny*pi*y)
+
+The anaytic solution is
+
+     u(x,y,t) = sin(wnx*pi*x)*sin(wny*pi*y)
+              * exp(-(wnx**2 + wny**2)*pi**2*t)
+
+The two wave numbers wnx, wny break the x/y
+symmetry of the problem.
+
+The finite difference discretisation is on a
+grid with same number of points in both coordinates
+(dx = dy).  The finite difference stencil is:
+
+time step n+1                 u(i,j,n+1)
+                                  |
+                                  | u(i,j+1,n)
+                                  |    _/
+                                  |  _/
+                                  | /
+time step n  u(i-1,j,n) ----- u(i,j,n) ----- u(i+1,j,n)
+                               _/
+                             _/
+                            /
+                      u(i,j-1,n)
+
+The solution scheme is
+
+     u(i,j,n+1) = u(i,j,n)
+                + nu * ( u(i-1,j,n) + u(i+1,j,n)
+                       + u(i,j-1,n) + u(i,j+1,n)
+                       - 4*u(i,j,n) )
+
+with the stability condition
+
+     nu = dt/dx**2 <= 1/4
