@@ -1,0 +1,6 @@
+# compiler
+CXX = icpc
+# flags (basic): O2 + simd
+CFLAGS = -g -O2 -qopt-report -qopenmp-simd -std=c++17
+# flags (advanced): O3 + simd + AVX2
+# CFLAGS = -g -O3 -axCORE-AVX2 -qopt-report -qopenmp-simd -std=c++17

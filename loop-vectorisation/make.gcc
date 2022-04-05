@@ -1,0 +1,6 @@
+# compiler
+CXX = g++
+# flags (basic): O2 + simd
+CFLAGS = -g -O2 -ftree-vectorize -fopt-info-vec -fopenmp-simd --std=c++17
+# flags (advanced): O3 + simd + AVX2
+# CFLAGS = -g -O3 -mavx2 -ftree-vectorize -fopt-info-vec -fopenmp-simd --std=c++17
