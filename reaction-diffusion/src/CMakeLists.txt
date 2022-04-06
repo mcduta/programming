@@ -1,9 +1,20 @@
-cmake_minimum_required (VERSION 2.8.11)
-
 #
 # --- project details
-
 project (ReactionDiffusion)
+
+
+#
+# --- minimal cmake version
+cmake_minimum_required (VERSION 2.8.12)
+
+
+#
+# --- default build type
+set (default_build_type "Release")
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    message (STATUS "Setting build type to '${default_build_type}'.")
+    set (CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
+endif ()
 
 
 #
@@ -11,15 +22,12 @@ project (ReactionDiffusion)
 enable_language (CXX)
 set (CMAKE_CXX_STANDARD 17)
 
-if (NOT CMAKE_BUILD_TYPE)
-    set (CMAKE_BUILD_TYPE "Release")
-endif ()
-
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    message (STATUS "Setting AVX vectorisation flags.")
     if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2")
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -xCORE-AVX2")
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -xCORE-AVX2 -axCORE-AVX512")
     endif ()
 endif ()
 
@@ -29,15 +37,15 @@ endif ()
 find_package (OpenGL)
 find_package (GLUT)
 if (OPENGL_FOUND AND GLUT_FOUND)
-    include_directories (${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS})
+    include_directories (${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIRS})
 endif ()
+
 
 #
 # --- OpenMP support
 find_package (OpenMP)
 
 if (OPENMP_FOUND)
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 else (OPENMP_FOUND)
@@ -52,7 +60,6 @@ if (OPENGL_FOUND AND GLUT_FOUND)
     add_executable (rdGL rdGL.cpp solution.cpp renderer.cpp timer.cpp)
     target_link_libraries (rdGL ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
 endif ()
-
 
 
 #
