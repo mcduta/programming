@@ -100,8 +100,8 @@ void solution :: init (const std::string configFileName) {
   // extra indices
   std::size_t is,     // current spot
               mc, nc, // 2D indices for current spot centre
-              ss;     // spot size
-
+              ss,     // spot size
+              ss2;    // ss**2/4
   // step 2: go over all spots and initialise
   for (is=0; is<ns; is++) {
     // spot centre
@@ -110,11 +110,14 @@ void solution :: init (const std::string configFileName) {
     // spot size
     ss = 1 + std::round ( (MIN(M,N)/20-1)*rand_distr_init (rand_gen) );
     // initialise spot
+    ss2 = 1 + ss * ss / 4;
     for (n=MAX(0, nc-ss); n<MIN(N-1,nc+ss); n++) {
       for (m=MAX(0, mc-ss); m<MIN(M-1,mc+ss); m++) {
-        k = COL_MAJOR_INDEX_2D(M,N,m,n);
-        u[k] = us;
-        v[k] = vs;
+        if ( (m-mc)*(m-mc)+(n-nc)*(n-nc) < ss2) {
+          k = COL_MAJOR_INDEX_2D(M,N,m,n);
+          u[k] = us;
+          v[k] = vs;
+        }
       }
     }
   }
