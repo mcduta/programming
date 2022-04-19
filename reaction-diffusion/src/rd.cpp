@@ -44,14 +44,24 @@ int main (int narg, char **varg) {
   }
 
   // time iterate solution
-  std::cout << " *** starting " << sol->niter << " iterations" << std::endl;
   auto timer = get_time_start ();
   sol -> iterate (sol->niter);
   auto wtime = get_time_elapsed (timer);
-  std::cout << " *** finished " << sol->niter << " iterations in " << wtime << std::endl;
 
+  // count flops
+  auto gflops = 24.e-9*(sol->M-2)*(sol->N-2)*(sol->niter);
+  std::cout << " ... " << sol->niter << " iterations, " << gflops / wtime << " gflops, " << wtime << " seconds." << std::endl;
+
+/*
   // write solution to file
-  sol -> dump ("sol.dat");
+  std::string filename="sol";
+  # ifdef _HDF5
+  filename.append (".h5");
+  # else
+  filename.append (".dat");
+  # endif
+  sol -> dump (filename);
+*/
 
   // cleanup
   delete sol;

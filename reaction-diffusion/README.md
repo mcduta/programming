@@ -27,9 +27,23 @@ make install
 
 The above will create an extra ``bin`` directory for the executables alongside the other directories listed above and copy the resulting executables in it.
 
+The executables are
+  * ``rd`` -- the main solver;
+  * ``rdGL`` -- an OpenGL based solver that renders the solution as it is being iterated on.
+
+``cmake`` attempts to build the executables with
+  * OpenMP support for multithreaded execution;
+  * OpenGL support for the rendering ``rdGL`` executable;
+  * HDF5 support for solution file storage.
+
+None of the above features is ``REQUIRED``, and ``cmake`` still builds a single threaded ``rd`` executable in the absence of all three above.
+
 Tweaks:
-  * use something like ``CXX=$(type -p g++) cmake`` to pick up the C++ compiler from the environment (in the case ``CXX`` is not set on the adequate compiler);
-  * specify the ``Debug`` build option with ``cmake -D CMAKE_BUILD_TYPE="Debug"`` to generate executables with debug symbols (``Release`` is the default)
+  * use something like ``CXX=$(type -p g++) cmake`` to pick up the C++ compiler from the environment (in the case ``CXX`` is not set on an adequate compiler);
+  * specify the ``Debug`` build option with ``cmake -D CMAKE_BUILD_TYPE="Debug"`` to generate executables with debug symbols (``Release`` is the default), useful when debugging or profiling;
+  * provide the path to a serial HDF5 library installation with ``-D HDF5_ROOT=/path/to/hdf5`` to output the solution file in HDF5 format;
+  * while the default is to build with single precision solution, the executables can be generated in double precision by specifying the build option ``-D USE_DOUBLE_PRECISION=ON``.
+
 
 ## Run
 
@@ -52,6 +66,13 @@ An alternative configuratrion file can be passed on to the executable as an argu
 ```
 ./bin/rd ./config/config.in
 python ./python/rdPlot.py
+```
+
+The ``rd`` executable outputs the computed solution to the file ``sol.dat`` (bespoke binary file format) or ``sol.h5`` (HDF5 format), depending on a viable HDF5 installation having been found by ``cmake``. ``sol.dat`` is the default solution file that ``rdPlot.py`` reads but ``sol.h5`` (or any other name) can replace that if supplied as a command line argument; ``python ./python/rdPlot.py sol.h5``.
+
+Multithreading is via OpenMP, hence tunable via the environment variable ``OMP_NUM_THREADS``. To run with 4 threads of execution, for example, do
+```
+OMP_NUM_THREADS=4 ./bin/rd ./config/config.in
 ```
 
 New configuration files can be added using model paramaters found in similar demonstrators: [[2](#2), [[3](#3), [[4](#4).

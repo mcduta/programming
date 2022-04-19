@@ -166,6 +166,12 @@ void GLreshapeImage (int width, int height) {
 //
 
 void GLkeyboardImage (unsigned char key, int x, int y) {
+  # ifdef _HDF5
+  std::string filename="sol.h5";
+  # else
+  std::string filename="sol.dat";
+  # endif
+
   switch (key) {
   case 'h': // print help
     std::cout << std::endl;
@@ -177,7 +183,7 @@ void GLkeyboardImage (unsigned char key, int x, int y) {
     break;
   case 's': // dump current solution to disk
     std::cout << " dumping solution to file..." << std::endl;
-    sol -> dump ("sol.dat");
+    sol -> dump (filename);
     break;
   case 'k': // calibrate solution rendering
     std::cout << " calibrating rendering..." << std::endl;
@@ -207,7 +213,7 @@ void GLrenderImage ( ) {
   img -> renderImage ( );
 
   auto wtime = get_time_elapsed (timer);
-  std::cout << " *** finished " << sol->niter << " iterations in " << wtime << std::endl;
+  std::cout << " ... finished " << sol->niter << " iterations in " << wtime << std::endl;
 
 }
 

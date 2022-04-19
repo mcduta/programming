@@ -12,8 +12,12 @@
 # include <cstdlib>
 # include <random>
 # ifdef _OPENMP
-# include <omp.h>
+  # include <omp.h>
 # endif
+# ifdef _HDF5
+  # include "H5Cpp.h"
+# endif
+
 
 // ----- definitions
 # ifndef MAX
@@ -38,8 +42,15 @@
 # endif
 
 
-# ifndef REAL
+// ----- determine real number precision
+# ifdef _DOUBLE_PRECISION
+  # define REAL double
+# else
   # define REAL float
+# endif
+
+# if (REAL != float) && (REAL != double)
+  # error wrong REAL definition.
 # endif
 
 

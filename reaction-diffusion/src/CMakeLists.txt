@@ -5,7 +5,17 @@ project (ReactionDiffusion)
 
 #
 # --- minimal cmake version
-cmake_minimum_required (VERSION 2.8.12)
+#       * CMake 3.12 and above use the ``find_package(<PackageName>)`` environmen variable.
+#       * See ``cmake --help-policy CMP0074`` for an explanation.
+cmake_minimum_required (VERSION 3.12)
+
+
+# 
+# --- option: float (default) or double?
+option (USE_DOUBLE_PRECISION "Build with 8 byte reals." OFF)
+if (USE_DOUBLE_PRECISION)
+    add_compile_definitions (_DOUBLE_PRECISION)
+endif ()
 
 
 #
@@ -54,11 +64,28 @@ endif ()
 
 
 #
+# --- HDF5 support
+find_package (HDF5 COMPONENTS CXX HL)
+
+
+#
 # --- "make"
 add_executable (rd rd.cpp solution.cpp timer.cpp)
+
+if (HDF5_FOUND)
+    add_compile_definitions (_HDF5)
+    include_directories (${HDF5_INCLUDE_DIRS})
+    link_directories( ${HDF5_LIBRARY_DIRS} )
+    target_link_libraries (rd ${HDF5_CXX_LIBRARIES} ${HDF5_HL_LIBRARIES})
+endif ()
+
+
 if (OPENGL_FOUND AND GLUT_FOUND)
     add_executable (rdGL rdGL.cpp solution.cpp renderer.cpp timer.cpp)
     target_link_libraries (rdGL ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+    if (HDF5_FOUND)
+        target_link_libraries (rdGL ${HDF5_CXX_LIBRARIES} ${HDF5_HL_LIBRARIES})
+    endif ()
 endif ()
 
 

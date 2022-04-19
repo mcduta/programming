@@ -1,7 +1,23 @@
 #
 # --- sol_read
 #       * read solution from file given as argument
-def sol_read (sol_filename):
+def sol_read (filename):
+
+    extension = filename.split(".")[-1]
+    if extension == "dat":
+        [nx, ny, u, v] = sol_read_dat (filename)
+    elif extension == "h5":
+        [nx, ny, u, v] = sol_read_h5  (filename)
+    else:
+        raise ValueError (F" *** unrecognised file extension, must be dat or h5.")
+
+    return nx, ny, u, v
+
+
+#
+# --- sol_read_dta
+#       * read solution from generic binary file
+def sol_read_dat (filename):
 
     import numpy
 
@@ -29,6 +45,21 @@ def sol_read (sol_filename):
 
 
 #
+# --- sol_read_dta
+#       * read solution from generic binary file
+def sol_read_h5 (filename):
+
+    import h5py
+    
+    with h5py.File(filename, "r") as file:
+        u = file["sol/u"]
+        v = file["sol/v"]
+        nx, ny = u.shape
+
+        return ny, nx, u[:,:].T, v[:,:].T
+
+
+#
 # --- sol_plot
 #       * read solution from file given as argument
 def sol_plot (nx, ny, u, v):
@@ -52,12 +83,12 @@ def sol_plot (nx, ny, u, v):
 #
 if __name__ == "__main__":
     import sys
-    sol_filename = "sol.dat"
+    filename = "sol.dat"
     if len(sys.argv) > 1:
-        sol_filename = str(sys.argv[1])
+        filename = str(sys.argv[1])
     try:
-        [nx, ny, u, v] = sol_read (sol_filename)
+        [nx, ny, u, v] = sol_read (filename)
     except:
-        print (F" *** error opening file {sol_filename}")
+        print (F" *** error opening file {filename}")
     else:
         sol_plot (nx, ny, u, v)

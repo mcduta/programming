@@ -138,6 +138,57 @@ void solution :: init (const std::string configFileName) {
 // ----- dump solution to file
 // ================================================================== //
 
+# ifdef _HDF5
+void solution :: dump (std::string filename) {
+
+  # ifdef _DOUBLE_PRECISION
+    # define H5_REAL H5::PredType::NATIVE_DOUBLE
+  # else
+    # define H5_REAL H5::PredType::NATIVE_FLOAT
+  # endif
+
+  try {
+
+    // auto-printing turn-off (failures are handled)
+    H5::Exception::dontPrint();
+    // create file
+    H5::H5File *file = new H5::H5File ( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
+    // solution group
+    H5::Group group (file -> createGroup ("sol"));
+    group = file -> openGroup ("sol");
+    // solution dimensions (remark: has to be "transposed", it's NxM rather than MxN)
+    hsize_t dims [2] = {N, M};
+    // group "sol", dataset "u"
+    H5::DataSpace *dataspace = new H5::DataSpace (2, dims);
+    H5::DataSet *dataset;
+    dataset = new H5::DataSet (group.createDataSet ("u", H5_REAL,  *dataspace));
+    dataset -> write (u, H5_REAL);
+    // close current dataset and data space
+    delete dataset;
+    delete dataspace;
+    // group "sol", dataset "v"
+    dataspace = new H5::DataSpace (2, dims);
+    dataset = new H5::DataSet (group.createDataSet ("v", H5_REAL,  *dataspace));
+    dataset -> write (v, H5_REAL);
+    // solution group
+    group.close();
+    // close everything
+    delete dataset;
+    delete dataspace;
+    delete file;
+
+  } // end of try block
+
+  // catch failures
+  catch ( H5::FileIException      error ) { error.printErrorStack(); } // H5File operations
+  catch ( H5::DataSetIException   error ) { error.printErrorStack(); } // DataSet operations
+  catch ( H5::DataSpaceIException error ) { error.printErrorStack(); } // DataSpace operations
+  catch ( H5::AttributeIException error ) { error.printErrorStack(); } // Attribute operations
+
+}
+
+# else
+
 void solution :: dump (std::string filename) {
 
   auto s = sizeof (REAL);
@@ -150,26 +201,22 @@ void solution :: dump (std::string filename) {
   file.write ((char *)  v, sizeof (REAL) * M * N);
   file.close ();
 
-  /*
+}
+
+# endif
+
+/*
+void solution :: dump_ascii (std::string filename) {
+
+  std::ofstream file;
+
   file.write ((char *) &M, sizeof M);
   file.write ((char *) &N, sizeof N);
   file.write ((char *) &u, sizeof u);
   file.write ((char *) &v, sizeof v);
-  */
 
-  /*
-  std::ofstream file;
-  file.open(filename);
-  file.precision(16);
-  file.setf(std::ios::scientific);
-
-  for (std::size_t int k=0; k<M*N; k++) {
-  file << u[k] << ", " << v[k] << std::endl;
-  }
-  file.close();
-  */
 }
-
+*/
 
 
 //====================================================================//

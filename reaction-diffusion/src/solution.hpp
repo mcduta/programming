@@ -12,15 +12,15 @@
 
 class solution {
 
-  private:
+  public:
     std::size_t M,                // number of points in x direction
                 N;                // number of points in y direction
+    std::size_t niter;            // number of time iterates
+
+  private:
     REAL *u, *v;                  // solution storage
     REAL Du, Dv,                  // Gray -- Scott equation
          alpha, beta;             // parameters
-
-  public:
-    std::size_t niter;            // number of time iterates
 
   public:
     /* contructor */
