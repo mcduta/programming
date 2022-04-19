@@ -75,7 +75,7 @@ Multithreading is via OpenMP, hence tunable via the environment variable ``OMP_N
 OMP_NUM_THREADS=4 ./bin/rd ./config/config.in
 ```
 
-New configuration files can be added using model paramaters found in similar demonstrators: [[2](#2), [[3](#3), [[4](#4).
+New configuration files can be added using model paramaters found in similar demonstrators: [[2]](#2), [[3]](#3), [[4]](#4).
 
 Another executable built is ``rdGL``, which renders the first species solution (while it is being computed) using OpenGL. The configuration setup and the solution solver is shared with ``rd``. Users can interact with the rendering window via the following keys:
   * ``h`` -- print help;
