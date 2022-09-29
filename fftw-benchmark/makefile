@@ -1,7 +1,8 @@
 #======================================================================#
 #                                                                      #
-#      Makefile -- explore code optimisation.                          #
-#               -- Intel compilers on Intel cpus                       #
+#      Makefile -- explore FFT implementations:                        #
+#                    * FFTW library                                    #
+#                    * Intel MKL FFT                                   #
 #                                                                      #
 #======================================================================#
 
@@ -86,7 +87,7 @@ endif
 ifeq (${DBG}, true)
   COPTS = -g
 else
-  COPTS = -O3 -mavx
+  COPTS = -O3 -mavx2
 endif
 
 ifeq (${OMP}, true)
@@ -126,7 +127,7 @@ help:
 		@echo " defaults: OMP=false, DBL=true"
 		@echo
 
-all:		fftw3 fftw3s
+all:		fftw3
 
 fftw3:  	fftw3.o fftw3_aux.o
 		${CC} ${COPTS} -o fftw3 fftw3.o fftw3_aux.o   ${LIBS}

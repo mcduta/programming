@@ -8,15 +8,14 @@ There are two main implementation of the same operation:
   * ``fftw3.c`` -- uses interleaved input/output arrays of ``fftw_complex``;
   * ``fftw3s.c`` -- uses split input/output arrays of ``float`` or ``double``;
 
-Both imlementations select the dimensionality (1D, 2D or 3D) and size of the transform using command line options. Also, the number of threads used by the transform is a command line option in the multithreaded executables. Single and double precision versions of the tests are generated as separate executables. So are single-threaded and multi-threaded versions.
+Both imlementations select the dimensionality (1D, 2D or 3D) and size of the transform using command line options. Also, the number of threads used by the transform is a command line option in the multithreaded executables. Single and double precision versions of the tests are generated as separate executables, and so are single-threaded and multi-threaded versions. The ``fftw3`` executable is the default target for ``make``.
 
 Both implementations measure and report the walltime taken by the library transform, as a measure of library/node performance.
 
 
 ## Build
 
-The code can be built by providing ``make`` the details of either the FFTW library or the MKL library. Thus, the following builds all the executable variants for FFTW
- (all executables are moved to a ``bin/`` directory):
+The code can be built by providing ``make`` the details of either the FFTW library or the MKL library. Thus, the following builds all the executable variants for FFTW (all executables are moved to a ``bin/`` directory):
 ```
 export FFTWDIR=/dls_sw/apps/fftw/3.3.8/64/6-avx2
 make FFTW_LIBRARY=fftw clean; make DBL=true  OMP=true  FFTW_LIBRARY=fftw; mv fftw3 bin/fftw3_dbl_omp_fftw;
