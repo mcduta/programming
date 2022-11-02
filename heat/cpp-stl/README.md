@@ -1,14 +1,17 @@
 # GPU programming using C++ STL
 
-## Background
 
+## Background
 These examples are meant to illustrate the potential the C++ STL has for writing single programs that target CPU or GPU execution. The examples are inspired by the developments in STL [[1]](#1) and the rewriting of Lulesh to make use of these [[2]](#2).
+
 
 ## Compiler support
 The minimal C++ standard is 2017. GCC and Nvidia nvc++ support this.
 
+
 ## Source code
 The source code consists of 1D and 3D explicit finite-difference solvers for the heat equation. The C++ code ``heat_*.cpp`` is complemented by equivalent OpenMP parallelised reference C code ``heat_*_omp.c``. Rather than using ``std::vector`` for the solution storage, the C++ codes follow the implementation of a Jacobi itaretion in [[3]](#3) and uses C arrays and a dedicated iterator definition in ``index.hpp``. All arrays are double precision. Note that, with GPU execution in mind, all values captured by the lambdas are by reference.
+
 
 ## CPU target
 Compile the code with something like
@@ -43,16 +46,15 @@ nvc++ -std=c++20 -stdpar=gpu -o heat_3d_g heat_3d.cpp
 
 Compilation automatically detects the compute capability of the GPU on the system which it is done. Recompilation is advised to target another GPU compute capability.
 
+
 ## Performance comparison
 Performance measured for 1000 iterations on a 2 socket 40 core node (Intel Xeon Gold 6148) system with P100.
 
-| | time [s] ||
-| | 1D | 3D |
-| | (400M grid points) | (200+M grid points) |
------------- | :-----------: | -----------: |
-OpenMP | 58.6 | 48.45 |
-C++ CPU | 80.2 | 69.1 |
-C++ GPU | 8.85 | 9.06 ||
+| | 1D<br>(400M grid points) | 3D<br>(200+M grid points) |
+|------------ | :-----------: | :-----------: |
+|OpenMP | 58.6s | 48.45s |
+|C++ CPU | 80.2s | 69.1s |
+|C++ GPU | 8.85s | 9.06s |
 
 
 ## Conclusion
