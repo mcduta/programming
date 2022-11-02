@@ -9,6 +9,8 @@
   * CUDA;
   * hybrid (MPI/OpenMP).
 
+1D and 3D cases are implemented using the C++ STL to illustrate single code that can target both multicore and GPU execution.
+
 The 2D version is also written in Python to illustrate various possibilities for the core compute load
   * python (using ``for`` loops);
   * numpy;

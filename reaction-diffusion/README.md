@@ -13,7 +13,8 @@ The source has a number of directories
 
   * ``python/`` -- directory for a Python visualiser for the solution file;
   * ``config/`` -- directory with run configuration examples;
-  * ``src/`` -- the C++ source.
+  * ``src/`` -- the C++ source;
+  * ``cupy/`` -- a Python ``cupy`` implementation of the finite-difference solver (with a separate README).
 
 
 ## Build
