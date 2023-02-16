@@ -4,7 +4,7 @@
 #
 # ======================================================================
 
-def mpi_data_process (mpi_proc_id, data_size, dev_get=False, dev_set=False):
+def mpi_data_process (mpi_proc_num, mpi_proc_id, size_data, dev_get=False, dev_set=False):
 
     # imports
     import cupy
@@ -18,15 +18,19 @@ def mpi_data_process (mpi_proc_id, data_size, dev_get=False, dev_set=False):
     dev_prop = cupy.cuda.runtime.getDeviceProperties (dev_id)
 
     if dev_get:
-        print (F" MPI GET device: rank {mpi_proc_id} : device {dev_id}")
+        import platform
+        hostname = platform.node().split(".")[0]
+        print (F" {hostname}: rank {mpi_proc_id} : device {dev_id}")
 
-    # total GPU memory available has to accommodate 4 times (2 arrays of equal size)
-    size = dev_prop["totalGlobalMem"] // (8 * 8);   # double precision
-    size = size // data_size
-    data_size = size * data_size
+    # total GPU memory available
+    size_avail = dev_prop["totalGlobalMem"]
+    # accommodate everything in memory (1 array per MPI process, 8 byte reals)
+    size_avail = size_avail // (8 * mpi_proc_num)
+    # how many data_size in available size
+    size_data = (size_avail // size_data) * size_data
 
     # allocate data on GPU memory and initialise
-    data_gpu = cupy.arange (data_size).astype(cupy.float32) % 10.0 + 1.0
+    data_gpu = cupy.arange (size_data).astype(cupy.float32) % 10.0 + 1.0
     # data_gpu = cupy.random.rand (data_size)
 
     # run device kernel
@@ -58,8 +62,8 @@ if __name__ == "__main__":
     args = parser.parse_args ()
 
     # data set dimensions
-    block_size = 256
-    grid_size  = 10000
+    size_block = 256
+    size_grid  = 10000
 
     # call GPU-side processing function
-    mpi_data_process (mpi_proc_id, block_size*grid_size, args.get_device, args.set_device)
+    mpi_data_process (mpi_proc_num, mpi_proc_id, size_block * size_grid, args.get_device, args.set_device)
