@@ -60,6 +60,8 @@ Performance measured for 1000 iterations on a 2 socket 40 core node (Intel Xeon 
 ## Conclusion
 OpenMP code is the fastest on CPU execution by a noticeable margin. However, C++ offers the convenience of a single source, which compiles to code that runs multithreaded on a multicore system and gives good performance on a GPU.
 
+## Note
+The C++23 standard promises interesting features that will make the examples give here slicker. In particular, the use of ``std::mdspan`` (a non-owning view into a contiguous sequence of objects that reinterprets it as a multidimensional array) is going to make the programming easier through the use of 3D array indexing in the ``std::for_each`` constructs. Awaiting implementation of the new standard (a bit patchy as of April 2023).
 
 ## References
 
