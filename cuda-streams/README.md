@@ -33,25 +33,6 @@ python ./test-streams.py -g 4
 ```
 
 
-
-
-
-
-
-
-
-[[2]](#2)
-
-
-
-
-https://carpentries-incubator.github.io/lesson-gpu-programming/instructor/streams.html
-
-python c similar but not to full extent
-
-
-
-
 ## References
 
 Presentations of CUDA streams
