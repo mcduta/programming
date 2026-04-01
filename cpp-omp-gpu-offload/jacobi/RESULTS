@@ -1,0 +1,69 @@
+g++
+---
+[wzp22541@cs05r-sc-hop01-04] jacobi> ./jac 30000 20000 500
+ ... 30000X20000 matrix (2.23517GB)
+ ... initialisation:	0.210676 sec
+   ... iterations:	67.7166 sec
+[wzp22541@cs05r-sc-hop01-04] jacobi> ./jac-gpu 30000 20000 500
+ ... 30000X20000 matrix (2.23517GB)
+ ... initialisation:	0.208029 sec
+ ... iterations:	158.158 sec
+!!!!!WRONG!!!!!
+
+
+clang++
+---
+[wzp22541@cs05r-sc-hop01-02] jacobi> ./jac 30000 20000 500
+ ... 30000X20000 matrix (2.23517GB)
+ ... initialisation:	0.203875 sec
+ ... iterations:	57.259 sec
+[wzp22541@cs05r-sc-hop01-02] jacobi> ./jac-gpu 30000 20000 500
+ ... 30000X20000 matrix (2.23517GB)
+ ... initialisation:	0.55819 sec
+ ... iterations:	8.59044 sec
+
+nvc++
+---
+[wzp22541@cs05r-sc-hop01-04] jacobi> ./jac 30000 20000 500
+ ... 30000X20000 matrix (2.23517GB)
+ ... initialisation:	0.230572 sec
+ ... iterations:	74.5063 sec
+[wzp22541@cs05r-sc-hop01-04] jacobi> ./jac-gpu 30000 20000 500
+ ... 30000X20000 matrix (2.23517GB)
+ ... initialisation:	0.768549 sec
+ ... iterations:	6.30677 sec
+
+
+OMP scaling
+---
+import matplotlib.pyplot as plt
+import numpy as np
+
+nthreads = np.array([8, 12, 16, 20, 28, 32, 40, 48])
+secs     = np.array([
+             79.6983,
+             52.3911,
+             40.7227,
+             31.2773,
+             27.284,
+             23.2172,
+             18.78,
+             17.7284
+]);
+gflops     = np.array([
+             15.0543,
+             22.9009,
+             29.4627,
+             38.3601,
+             43.9745,
+             51.6771,
+             63.8873,
+             67.6767
+]);
+plt.plot(nthreads, gflops, linewidth=4, marker="o", markersize=10)
+plt.xlabel("number of OpenMP threads")
+plt.ylabel("performance [Gflops]")
+plt.grid (axis="y")
+plt.savefig ("openmp-cpu-multithreaded-scaling.png")
+#plt.show()
+
