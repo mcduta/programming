@@ -16,11 +16,11 @@ C++17 introduced parallel algorithms, implemented in functions that can optional
 * `std::execution::par_unseq` -- allows parallel multithreaded execution and vectorisation (SIMD);
 * `std::execution::unseq` -- allows SIMD vectorisation but not multithreading.
 
-The above policies are passed to the standard library algorithms (which internaly decides how to act on them) and then the compiler optimises the code the standard library ends up instantiating. If the instantiation requires parallel execution, the compiler thus generates code that 
+The above policies are passed to the standard library algorithms (which internally decides how to act on them) and then the compiler optimises the code the standard library ends up instantiating. If the instantiation requires parallel execution, the compiler thus generates code that 
 * spawns worker threads;
 * uses a thread pool;
 * splits the input range into chunks and
-* use SIMD instructions for `unseq` and `par_unseq`.
+* uses SIMD instructions for `unseq` and `par_unseq`.
 
 ## Parallel implementations
 The Parallel Standard Template Library (PSTL) standard defines the API and semantic constraints, but does not require an implementation to actually run in parallel. To honour the promise that PSTL code can target both CPU and GPU, real-world parallelism comes from different sources.
