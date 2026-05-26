@@ -3,7 +3,7 @@
 ## Overview
 The Gray-Scott equations are a classic reaction-diffusion system of partial differential equations that simulates how two chemical substances react and spread across a space domain in time. The equations describe a reaction in which the substance $u$ and consumed and $v$ is produced
 ```math
-\frac{\partial u}{\partial t} = D_u \nabla^2 u - uv^2 + \alpha(1-u)
+\frac{\partial u}{\partial t} = D_u \nabla^2 u - uv^2 + \alpha(1-u) \\
 \frac{\partial v}{\partial t} = D_v \nabla^2 v + uv^2 - (\alpha+\beta)v
 ```
 In the above
