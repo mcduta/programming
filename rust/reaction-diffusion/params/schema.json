@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "du": { "type": "integer", "minimum": 0, "maximum": 1 },
+    "dv": { "type": "integer", "minimum": 0, "maximum": 1 },
+    "alpha": { "type": "number", "minimum": 0, "maximum": 0.1 },
+    "beta": { "type": "number", "minimum": 0, "maximum": 0.1 }
+  },
+  "required": ["Du", "Dv", "alpha", "beta"],
+  "additionalProperties": false
+}
